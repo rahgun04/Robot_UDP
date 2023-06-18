@@ -31,6 +31,7 @@ const int pinEN_R = 6;
 
 unsigned int localPort = 1883;
 char mdnsName[] = "wifi102";
+IPAddress ip(192, 168, 0, 5);
 
 const char ssid[] = "Pixel 6"; //"Dell G15";//"Jordon";        // your network SSID (name)
 const char pass[] =  "nointernet"; //"x2dwlx2d";        // your network password
@@ -73,7 +74,7 @@ void drive_handler(drive_packet dp){
 
 void Server_Connection_Manager::periodicHandler(){
     mdnsResponder.poll();
-    
+    //Serial.println("Periodic");
 
     // if there's data available, read a packet
     int packetSize = Udp.parsePacket();
@@ -108,7 +109,7 @@ void Server_Connection_Manager::periodicHandler(){
         
     
     if (client_known){
-        for (int i = 0; i < 5; i++){
+        for (int i = 0; i < 1; i++){
             /*
             if (!send_queue.empty()){
                 send_queue_t m = send_queue.front();
@@ -137,7 +138,7 @@ Server_Connection_Manager::Server_Connection_Manager(){
     
     Serial.print(F("Connecting to SSID: "));
     Serial.println(ssid);
-
+    WiFi.config(ip);
     status = WiFi.begin(ssid, pass);
 
     delay(1000);
