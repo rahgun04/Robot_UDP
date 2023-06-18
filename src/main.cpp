@@ -66,6 +66,15 @@ void setupQueues(){
 //*****************************************************************
 static char ptrTaskList[400]; //temporary string buffer for task stats
 
+bool push_to_send_queue(xQueueHandle queue_handle, send_queue_t* data, int ticksToWait){
+  int ret = xQueueSendToBack(queue_handle, data, ticksToWait);
+  if (ret != pdTRUE){
+    delete [] data->buffer;
+  }
+  return true;
+}
+
+
 void taskMonitor(void *pvParameters)
 {
     int measurement;
@@ -188,7 +197,7 @@ void sensor_handler(){
     arr[6] = (diff >> 16) & 0xFF;
     arr[7] = (diff >> 24) & 0xFF;
 
-    xQueueSendToBack(send_queue, &metadata, 10);
+    push_to_send_queue(send_queue, &metadata, 10);
 
     //if (send_queue.size() < 20){
     //  send_queue.push(metadata);
@@ -226,7 +235,7 @@ void sensor_handler(){
     magarr[2] = 1; //Size L
     magarr[3] = 0;
     magarr[4] = (uint8_t) mag_state;
-    xQueueSendToBack(send_queue, &magnetadata, 10);
+    push_to_send_queue(send_queue, &magnetadata, 10);
 
     uint8_t* radioarr = new uint8_t[4+3];
     send_queue_t radio_data;
@@ -238,7 +247,7 @@ void sensor_handler(){
     radioarr[2] = 3;
     radioarr[3] = 0;
     //memcpy(&radioarr[4], &last_valid_name, 4);
-    xQueueSendToBack(send_queue, &radio_data, 10);
+    push_to_send_queue(send_queue, &radio_data, 10);
     
   }
   /*
